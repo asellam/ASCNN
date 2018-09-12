@@ -1,2 +1,2 @@
 # ASCNN
-Kinship verification via All-subsets Siamese Convolutional Neural Network
+All-subsets Siamese Convolutional Neural Network for Kinship Verification.
