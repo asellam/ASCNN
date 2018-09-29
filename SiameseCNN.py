@@ -105,7 +105,8 @@ SiameseCNN = Model(input=[left_input,right_input],output=prediction)
 optimizer = SGD(0.1)
 #Compile the Keras Model
 SiameseCNN.compile(loss="mean_squared_error",optimizer=optimizer,metrics=["accuracy"])
-
+#print the number of Training/Validation samples
+print("Training on",X0.shape[0],"samples, validation on",X2.shape[0],"samples")
 #Training the Siamese CNN with a goal loss
 #Current Epoch Counter
 Epochs=0

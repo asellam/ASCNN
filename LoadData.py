@@ -1,29 +1,40 @@
+#----------------------------------------
+#- Siamese CNN for Kinship Verification -
+#----------------------------------------
+#- By: Abdellah SELLAM                  -
+#-     Hamid AZZOUNE                    -
+#----------------------------------------
+#- Created: 2018-07-02                  -
+#- Last Update: 2018-09-27              -
+#----------------------------------------
+#Import Libraries
 import numpy as np
 import scipy.io as sio
 from scipy import misc
 from matplotlib import pyplot as plt
-from matplotlib.colors import rgb_to_hsv,hsv_to_rgb
+#The Root directory that contains the KinfaceW dataset uncompressed
 RootDir="D:/PhD"
+#A dictionnary that converts the kinship type prefix to the corresponding
+# directory
 PrefixToDir={"fd":"father-dau","fs":"father-son","md":"mother-dau","ms":"mother-son"}
 
-def FlipAugment(X,Y):
-    s=X.shape
-    MoreX=[]
-    MoreY=[]
-    for i in range(s[0]):
-        pImg=X[i][0]
-        cImg=X[i][1]
-        kOut=Y[i]
-        MoreX.append([pImg,cImg])
-        MoreY.append(kOut)
-        MoreX.append([np.fliplr(pImg),cImg])
-        MoreY.append(kOut)
-        MoreX.append([pImg,np.fliplr(cImg)])
-        MoreY.append(kOut)
-        MoreX.append([np.fliplr(pImg),np.fliplr(cImg)])
-        MoreY.append(kOut)
-    return (np.array(MoreX),np.array(MoreY))
-
+#This function loads data from a single kinship subset
+#Arguments:
+#----------
+#KinSet: The kinship dataset version (KinFaceW-I or KinFaceW-II)
+#KinShip: The kinship subset prefix (fd,fs,md or ms)
+#Fold: The Five-Fold-Cross-Validation's fold number (1,2,3,4 or 5)
+#ValidSplit: The proportion of training data to be used for validation ([0..1])
+#Return Value:
+#--------------
+#(X0,Y0,X1,Y1,X2,Y2): a tuple containing Training/Validation/Test inputs and
+# targets:
+#   X0: Training Inputs (Numpy nd-array)
+#   Y0: Training Targets (Numpy nd-array)
+#   X1: Validation Inputs (Numpy nd-array)
+#   Y1: Validation Targets (Numpy nd-array)
+#   X2: Test Inputs (Numpy nd-array)
+#   Y2: Test Targets (Numpy nd-array)
 def LoadFoldK(KinSet,KinShip,Fold,ValidSplit):
     meta=sio.loadmat(RootDir+"/"+KinSet+"/meta_data/"+KinShip+"_pairs.mat")
     pairs=meta['pairs']
@@ -53,6 +64,21 @@ def LoadFoldK(KinSet,KinShip,Fold,ValidSplit):
                 TrainN=TrainN+1
     return (np.array(TrainX),np.array(TrainY),np.array(ValidX),np.array(ValidY),np.array(TestX),np.array(TestY))
 
+#This function loads the data from all kinship subsets
+#Arguments:
+#----------
+#Fold: The Five-Fold-Cross-Validation's fold number (1,2,3,4 or 5)
+#ValidSplit: The proportion of training data to be used for validation ([0..1])
+#Return Value:
+#--------------
+#(X0,Y0,X1,Y1,X2,Y2): a tuple containing Training/Validation/Test inputs and
+# targets:
+#    X0: Training Inputs (Numpy nd-array)
+#    Y0: Training Targets (Numpy nd-array)
+#    X1: Validation Inputs (Numpy nd-array)
+#    Y1: Validation Targets (Numpy nd-array)
+#    X2: Test Inputs (Numpy nd-array)
+#    Y2: Test Targets (Numpy nd-array)
 def LoadFold(Fold,ValidSplit):
     KinSets=[("fs","KinFaceW-I"),("fd","KinFaceW-I"),("ms","KinFaceW-I"),("md","KinFaceW-I"),("fs","KinFaceW-II"),("fd","KinFaceW-II"),("ms","KinFaceW-II"),("md","KinFaceW-II")]
     Data=[]
